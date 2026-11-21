@@ -1,0 +1,13 @@
+{
+  "name": "letsgal-world-state",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test acceptance/*.test.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.21.5"
+  }
+}

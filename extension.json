@@ -1,0 +1,28 @@
+{
+  "id": "mixing-entropy.world-state",
+  "name": "世界状态",
+  "description": "按来源、对象与关系组织状态，并在剧情发生时检查与调用。",
+  "version": "0.1.0",
+  "sdkVersion": "^3.0.0",
+  "entry": "dist/index.mjs",
+  "studioEntry": "dist/studio.js",
+  "dataDependencies": {
+    "directory": {
+      "name": "接入来源的公开定义",
+      "contract": "world-state.sources",
+      "version": "^1.0.0",
+      "access": "read",
+      "autoCreate": {"name":"世界状态来源资料","contractVersion":"1.0.0","runtimePolicy":"readonly","schema":{"type":"object","titleColumn":"name","columns":[
+        {"key":"name","label":"来源名称","type":"text"},{"key":"kind","label":"类型","type":"text"},{"key":"source","label":"来源编号","type":"text"},
+        {"key":"declaration","label":"公开结构与方法","type":"long-text"},{"key":"definition","label":"来源定义","type":"long-text"}
+      ]}}
+    },
+    "calls": {
+      "name": "世界状态跨来源调用",
+      "contract": "world-state.calls",
+      "version": "^1.0.0",
+      "access": "runtime-write",
+      "autoCreate": {"name":"世界状态调用","contractVersion":"1.0.0","runtimePolicy":"archive"}
+    }
+  }
+}
