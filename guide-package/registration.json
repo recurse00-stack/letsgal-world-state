@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "kind": "letsgal-package-registration",
+  "package_type": "plugin-guide",
+  "id": "mixing-entropy.world-state",
+  "enabled": true,
+  "show_when_paused": false,
+  "selection_mode": "auto",
+  "selected_version": null,
+  "versions": {
+    "0.1.0": {
+      "root": "plugins/mixing-entropy.world-state/0.1.0",
+      "entry": "SKILL.md",
+      "revision": "beta.1",
+      "title": "世界状态使用手册",
+      "summary": "从角色追查天气，在剧情发生时组合多个来源的状态与演出。",
+      "section": "skills",
+      "files": {
+        "references/data.md": "7ec794cd048c2bd0ac1e96c4910d895f00bc4594893e07de79bffe8579fa78ff",
+        "references/providers.md": "069d937531940117b7f0616052e83c464d74fc6a7d526790af585291e3a3cc8c",
+        "references/story.md": "eca479561ac42b17f02fbfb8f34039a5d5a1d219b0f0833799e00fc6928c9811",
+        "references/verification.md": "4e7b719f7209876ccf63de7df95cb1f264d17672bb19a4a82641321b2b0d561b",
+        "SKILL.md": "2b3a6e35325a527bae2d9e0db3fc605623db087c7a896db5ae9482e792949ea9"
+      },
+      "wiki_library": {
+        "schema": 1,
+        "kind": "letsgal-wiki-library",
+        "items": [
+          {
+            "section": "skills",
+            "id": "mixing-entropy.world-state",
+            "version": "0.1.0",
+            "revision": "beta.1",
+            "title": "世界状态使用手册",
+            "summary": "从角色追查天气，在剧情发生时组合多个来源的状态与演出。",
+            "uid": "ext-def35b937ef4dfd0",
+            "status": "available",
+            "documents": [
+              {
+                "id": "data",
+                "title": "建立资料与查询关系",
+                "html": "<p>“生成实例”只在执行时分配编号。选择类型和数量，再为结果命名为 arrows。一次生成十支箭后，arrows 是十个独立的来源与编号引用。转交、拆堆或消耗时传入选中的引用，图标与类型默认资源可以继续共用。</p>\n<p>打开世界状态设置页。先在“对象类型”添加“天气”，给它一个数值字段 modifier；再创建“场景”，给它一个引用字段 weather。为角色类型创建 place 引用。新建“雨”“广场”“调查员”三个对象，分别关联到上一级对象。编辑器显示的稳定编号可用于参数。名称可以修改。</p>\n<p>字段支持数值、文本、开关、对象引用、结构、列表、片段和来源方法，对应 number、text、boolean、ref、object、list、fragment、action。嵌套结构用 fields 描述成员，列表用 items 描述成员类型。对象初值按类型默认值补全。读天气修正时，用角色作起点，依次读取 place、weather、modifier。</p>\n<pre><code class=\"language-json\">{&quot;op&quot;:&quot;read&quot;,&quot;ref&quot;:{&quot;source&quot;:&quot;world&quot;,&quot;id&quot;:&quot;hero&quot;},&quot;path&quot;:[&quot;place&quot;,&quot;weather&quot;,&quot;modifier&quot;]}\n</code></pre>\n<p>查询遮雨效果时可限定有 cover 词条、owner 指向本次角色、open 为真。只检查指定伞时直接按其编号读取。存在、计数、列表和单个匹配分别使用 exists、count、list、one。单个匹配要求恰好一个结果。展示可以合并十支箭，产生时应给每支自己的编号，转交只改 owner。消耗后原号仍可报告已消耗。</p>\n<p>修改状态使用 write，一步中可以放多个 operations。支持 create、set、add、consume。字段和值校验通过后才一并提交。配置中的定义、存档中的现状和使用者的临时显示各有独立职责。</p>"
+              },
+              {
+                "id": "story",
+                "title": "在原剧情中检查与演出",
+                "html": "<p>在同一片段写好公共开场与收尾，在中间插入“执行状态规则”，生成调用位置编号。用 branch 编排分支，各项依次求值，第一项满足后运行对应 steps。仅有 steps 的末项用作兜底。分支可以运行三段、两段或空序列。规则可以嵌套，多个独立影响可分成多个步骤。</p>\n<pre><code class=\"language-json\">[{&quot;kind&quot;:&quot;branch&quot;,&quot;branches&quot;:[{&quot;condition&quot;:{&quot;op&quot;:&quot;arg&quot;,&quot;path&quot;:[&quot;hasLetter&quot;]},&quot;steps&quot;:[{&quot;kind&quot;:&quot;macro&quot;,&quot;id&quot;:&quot;shop&quot;}]},{&quot;steps&quot;:[]}]}]\n</code></pre>\n<p>将 remember 设为 true，当前调用位置保留首次路线；给 scope 传角色编号可按人区分。首次获奖与再次播放同一段剧情是两个独立条件。要共享商店演出，在“共享演出”建立一项并选择原生章节及片段，把示例 shop 改为该项实际编号。多个调用位置引用同一宏。局部演出可从调用检查器选择原生片段，以 fragment 步骤引用。</p>\n<p>在工作台打开“对白模板”。给旁白和需要出声的角色各建一个模板，目标片段内放一张原生旁白或对应角色的对话卡，正文填写 <code>{mixing-entropy.world-state.lineText}</code>。在方法块的“动作编排”里添加“局部对白”，逐行填写角色、台词和可选配音的素材路径。同一角色的各句共用一个模板。一句变两句只需在命中的分支中多写一行。需要镜头、立绘或交互选项时，先在 Studio 的原生片段编辑器编好，再在该分支加入“原生片段”选取它。</p>\n<p>自由问话可写一个选择和三份交谈。每次问完返回选择。若乙提供账本线索，就在甲的交谈开始时读取这条线索。若甲先来过，乙提供线索后回访甲，也能触发追问。要记第一位受访者，初次交谈才写 first。展示选项、点击和真正开门时可分别安排一次判断。</p>\n<p>监听按事件和作用域启用。进入广场时显式发送 enter。监听匹配后再看当地天气、防护并写入 wet；撑开伞只改变下一次检查，烘干动作可单独把 wet 清除。作者能把防护放在事件入口或监听内条件。每帧移动、碰撞和战斗回合可由独立子层组织。</p>"
+              },
+              {
+                "id": "providers",
+                "title": "接入外部数据与操作",
+                "html": "<p>一个来源拥有一类事实。把公开的方法、输入字段的 kind 和 required、输出类型登记到来源声明。运行方法通过共用的 world-state.calls 1.0 合约交换请求和回执。每个插件将 calls 别名绑定到同一 archive 集合；正文资料和玩家持有物继续由所属插件保存。</p>\n<p>每条请求含 source、method、args、ticket 和 status。提供方按 source 精确提取 pending，完成后把同一请求更新为 done 并填写 result。领域操作需要把 ticket 和业务改动一并保存；再次收到同一个 ticket 直接回送原结果。失败填写 failed 和 reason，已受理且回执不明时先核旧请求。接入作者可复用插件源码 src/channel.js 的 request、serve。</p>\n<p>在武器类型中加入“来源方法”字段，选择已接入的取样来源与方法，将上下界传为 lo 和 hi。在剧情里加入“调用来源方法”，选“从对象属性取得方法”，再选择武器和字段路径。查看武器资料只显示绑定。执行攻击时取样一次，给结果命名为 hit；扣血和附加状态都可以读取 results.hit。恢复同一次攻击沿用已取结果，正常发起下一次攻击重新计算。并行分支可各自发起业务操作，在需要结果时等待。</p>\n<p>例如，一把练习剑将重击参数写成以下方法属性。dice 和 roll 应对应作品里实际登记的来源和方法编号。</p>\n<pre><code class=\"language-json\">{&quot;source&quot;:&quot;dice&quot;,&quot;method&quot;:&quot;roll&quot;,&quot;args&quot;:{&quot;lo&quot;:1,&quot;hi&quot;:10}}\n</code></pre>\n<p>来源可在公开目录的声明中提供 objects 数组。每条包含稳定 id 和显示名称 name，也可以带 tags。剧情的对象选择器据此显示外部引用；读取玩家当前持有、撑开状态等事实时，运行时仍向登记该对象的来源查询。</p>"
+              },
+              {
+                "id": "verification",
+                "title": "检查存档与失败",
+                "html": "<p>在运行时区分普通重入、剧情历史、读取玩家存档和开新周目。用同一调用点依次传入真、假、真，观察三段、两段、三段；随后改成首次记忆再观察。读存档应沿已经播放的路线，保留已完成的写入和取样。</p>\n<p>通关时给完成记录独立编号，传入通关当时实际保有的知识以及作者允许继承的知识。交集是这次通关可继承的内容。新周目显式从指定记录开局。图鉴适用普通槽；永久记录使用跨槽存储。</p>\n<p>并行步骤可以设为全部完成后继续、首项完成后继续或立即继续，并把任务列表保存为 jobs。离场时可以把该列表传给“取消待续任务”。之后等待已取消的任务会进入“失败时执行”，其中 error.code 为 CANCELLED。外部来源已经受理的扣费要向来源核对，已经结算的数值仍可读取。</p>\n<p>启用“开发者日志”后可以检查调用编号和具体失败位置。单值查询命中多项、传入错误类型、引用未登记的方法，都能分别处理。已经登记的来源未回执时，调用结果显示待确认。发布前在独立 Player 冷启动读取路线中途、第二句和并发中途三个普通档位，并核对显示内容和对象实际值。</p>"
+              }
+            ],
+            "navigation": {
+              "start": "data",
+              "intro": "从角色追查天气，在剧情发生时组合多个来源的状态与演出。",
+              "groups": [
+                {
+                  "title": "作品编写",
+                  "documents": [
+                    "data",
+                    "story"
+                  ]
+                },
+                {
+                  "title": "工程接入",
+                  "documents": [
+                    "providers",
+                    "verification"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
